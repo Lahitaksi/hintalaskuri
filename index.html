@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hinta-arvio | Lähitaksi</title>
+  <meta name="description" content="Laske taksimatkan hinta-arvio Lähitaksin toiminta-alueilla.">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="map"></div>
+
+  <!-- Matkan tiedot kartan päällä -->
+  <div class="trip">
+    <div class="chip">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-6 4 4 8-8"/></svg>
+      <b id="trip-distance">-</b>
+    </div>
+    <div class="chip">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+      <b id="trip-duration">-</b>
+    </div>
+    <div class="chip">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+      <b id="trip-area">-</b>
+    </div>
+  </div>
+
+  <aside class="panel">
+    <header class="brand">
+      <img class="logo" src="https://www.lahitaksi.fi/app/themes/lahitaksi/public/build/assets/lahitaksi-logo-BFnhlxmF.svg" alt="Lähitaksi">
+      <small>Hinta-arvio</small>
+    </header>
+
+    <div class="scroll">
+      <!-- Lähtö, välietapit ja kohde lisätään tähän js/app.js:ssä -->
+      <div class="route" id="stops"></div>
+      <button type="button" class="addvia" id="add-via">
+        <span><svg width="12" height="12" viewBox="0 0 12 12"><path d="M6 1v10M1 6h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+        Lisää välietappi
+      </button>
+
+      <div class="label">Ajankohta</div>
+      <div class="seg" id="time-select">
+        <button type="button" data-value="day">Päivä<small>Arkisin 06–18</small></button>
+        <button type="button" data-value="night">Ilta ja pyhä<small>18–06 sekä pyhät</small></button>
+      </div>
+
+      <div class="label">Lisäpalvelut</div>
+      <div class="opts">
+        <label class="opt">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></span>
+          <span class="t">Ennakkotilaus</span>
+          <input type="checkbox" class="sw" data-option="preorder">
+        </label>
+        <label class="opt">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18"/></svg></span>
+          <span class="t">Business Class<small>Vain Uudellamaalla, +20 € / +25 €</small></span>
+          <input type="checkbox" class="sw" data-option="business">
+        </label>
+        <label class="opt">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11h16c0 3.3-3.6 6-8 6s-8-2.7-8-6z"/><path d="M4 11a8 8 0 0 1 8-8v8M20 11V6h2"/><circle cx="8" cy="20" r="1.8"/><circle cx="16" cy="20" r="1.8"/></svg></span>
+          <span class="t">Lastenistuin</span>
+          <input type="checkbox" class="sw" data-option="childSeat">
+        </label>
+        <label class="opt">
+          <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8l-9-5-9 5v8l9 5 9-5zM3 8l9 5 9-5M12 13v8"/></svg></span>
+          <span class="t">Pakettikuljetus</span>
+          <input type="checkbox" class="sw" data-option="package">
+        </label>
+      </div>
+
+      <nav class="links">
+        <a href="https://icab.bi/lahitaksi/" target="_blank" rel="noopener"><span>»</span> Lataa maksuton Lähitaksi-sovellus</a>
+        <a href="https://lahitaksi.fi/fi/hinnasto" target="_blank" rel="noopener"><span>»</span> Hinnasto</a>
+      </nav>
+      <p class="note">
+        Hinta-arviot voimassa Lähitaksin
+        <a href="https://www.lahitaksi.fi/fi/lahitaksi#palvelualue" target="_blank" rel="noopener">toiminta-alueilla</a>.
+        Laskurin antama reitti on laskennallinen ehdotus ja kuljettaja voi arvionsa mukaan valita myös toisen reitin.
+        Hinta-arvio ei ole sitova. Lopullinen hinta voi vaihdella liikenneolosuhteiden, kuten ruuhkatilanteen perusteella.
+      </p>
+    </div>
+
+    <footer class="result">
+      <div class="prices">
+        <div class="pc" id="card-small">
+          <div class="who">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="7" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8z"/></svg>
+            <span id="label-small">1–4 hlö</span>
+          </div>
+          <div class="v" id="price-small">–</div>
+        </div>
+        <div class="pc" id="card-large">
+          <div class="who">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="7" r="3.5"/><circle cx="17" cy="8" r="3"/><path d="M2 21c0-3.9 3.1-7 7-7s7 3.1 7 7zM16 21c0-2-.6-3.8-1.6-5.3A6 6 0 0 1 22 21z"/></svg>
+            <span id="label-large">5–8 hlö</span>
+          </div>
+          <div class="v" id="price-large">–</div>
+        </div>
+      </div>
+      <div class="notes" id="notes"></div>
+      <button type="button" class="calc" id="calculate">Laske hinta-arvio</button>
+      <div class="err" id="error" role="alert"></div>
+      <div class="order">
+        <span>Tilaa taksi</span>
+        <a href="tel:01007300">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1A17 17 0 0 1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1z"/></svg>
+          0100 7300
+        </a>
+      </div>
+    </footer>
+  </aside>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/pricing.js"></script>
+  <script src="js/geocode.js"></script>
+  <script src="js/routing.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

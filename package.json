@@ -1,0 +1,13 @@
+{
+  "name": "lahitaksi-hinta-arvio",
+  "version": "1.0.0",
+  "description": "Lähitaksin taksimatkan hinta-arvio kartalla",
+  "private": true,
+  "scripts": {
+    "start": "npx --yes serve -l 8080 .",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
