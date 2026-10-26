@@ -1,2 +1,0 @@
-# hintalaskuri
-Lähitaksin hintalaskuri
